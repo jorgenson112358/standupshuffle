@@ -67,7 +67,7 @@ class StandupShuffle extends React.Component {
                     <div className="col-12">
                         <form>
                             <div className="form-group">
-                                <label for="namesList">Comma-separated list of all names: </label>
+                                <label htmlFor="namesList">Comma-separated list of all names: </label>
                                 <input type="text" id="namesList" className="form-control" value={this.state.names} onChange={this.onNameChange} />
                             </div>
                             {this.getButton()}
