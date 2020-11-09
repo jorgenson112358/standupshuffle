@@ -1,1 +1,1 @@
-import "./shuffle.jsx";
+import "./StandupShuffle.jsx";
