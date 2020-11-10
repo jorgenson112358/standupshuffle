@@ -6,15 +6,62 @@ class StandupShuffle extends React.Component {
     constructor() {
         super();
 
-        this.state = { people: [], names: '' }
-    }
+        this.state = { 
+            people: [], 
+            names: '',
+            remaining: [],
+            currentName: '',
+            action: 'empty'
+        }
 
-    randomize = () => {
-        this.setState({ people: _.shuffle(this.state.names.split(",")) });
+        this.actions = {
+            randomlist: 'random list',
+            nextname: 'next name',
+            empty: 'empty'
+        }
     }
 
     onNameChange = (event) => {
         this.setState({ names: event.target.value });
+    }
+
+    getRandomList = () => {
+        var lst = _.shuffle(this.state.names.split(","));
+
+        this.setState({ 
+            people: lst,
+            action: this.actions.randomlist 
+        });
+    }
+
+    getNextRandomName = () => {
+        var lst;
+
+        if (this.state.action === this.actions.empty) {
+            lst = _.shuffle(this.state.names.split(","));
+        }
+        else if (this.state.action === this.actions.randomlist) {
+            lst = _.shuffle(this.state.names.split(","));
+        }
+        else {
+            lst = this.state.remaining.map((x) => x);
+        }
+
+        var name;
+
+        if (lst.length == 0) {
+            name = "That's everyone! You're done!";
+        }
+        else {
+            name = "Current: " + lst.pop();
+        }
+
+        this.setState({
+            remaining: lst,
+            currentName: name,
+            action: this.actions.nextname
+        })
+
     }
 
     getButton = () => {
@@ -28,31 +75,50 @@ class StandupShuffle extends React.Component {
         }
 
         return (
-            <button 
-                type="button" 
-                className={classes}
-                disabled={btnDisabled}
-                onClick={this.randomize}
-                aria-disabled={ariaDisabled}
-                >
-                    Randomize
-            </button>
+            <div>
+                <button 
+                    type="button" 
+                    className={classes}
+                    disabled={btnDisabled}
+                    onClick={this.getRandomList}
+                    aria-disabled={ariaDisabled}
+                    >
+                        Generate a random list
+                </button>
+                <span>&nbsp;&nbsp; or &nbsp;&nbsp;</span>
+                <button
+                    type="button" 
+                    className={classes}
+                    disabled={btnDisabled}
+                    onClick={this.getNextRandomName}
+                    aria-disabled={ariaDisabled}
+                    >
+                    Get next random name
+                </button>
+            </div>
         )
     }
 
     render() {
-        var people = this.state.people.map( (person, index) => {
-            if (person.trim() == "") {
-                return null;
-            }
-            else {
-                return (
-                    <li>
-                        <p>{person.trim()}</p>
-                    </li>
-                )    
-            }
-        });
+        var people = [];
+        var nextName = null;
+        if (this.state.action === this.actions.randomlist) {
+            people = this.state.people.map( (person, index) => {
+                if (person.trim() == "") {
+                    return null;
+                }
+                else {
+                    return (
+                        <li>
+                            <p>{person.trim()}</p>
+                        </li>
+                    )    
+                }
+            });    
+        }
+        else if (this.state.action === this.actions.nextname) {
+            nextName = <p>{this.state.currentName}</p>
+        }
 
         return (
             <div>
@@ -80,6 +146,7 @@ class StandupShuffle extends React.Component {
                         <ul>
                             {people}
                         </ul>
+                        {nextName}
                     </div>
                 </div>
             </div>
